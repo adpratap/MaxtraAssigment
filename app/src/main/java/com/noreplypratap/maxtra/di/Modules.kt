@@ -1,7 +1,7 @@
 package com.noreplypratap.maxtra.di
 
 import com.noreplypratap.maxtra.api.PostServices
-import com.noreplypratap.maxtra.views.ui.utils.BaseURL
+import com.noreplypratap.maxtra.utils.BaseURL
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent

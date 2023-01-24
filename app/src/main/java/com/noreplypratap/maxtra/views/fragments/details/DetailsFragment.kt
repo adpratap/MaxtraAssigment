@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.noreplypratap.maxtra.databinding.FragmentDetailsBinding
 import com.noreplypratap.maxtra.model.response.Data
-import com.noreplypratap.maxtra.views.ui.utils.TAG
+import com.noreplypratap.maxtra.utils.TAG
 
 class DetailsFragment : Fragment() {
 

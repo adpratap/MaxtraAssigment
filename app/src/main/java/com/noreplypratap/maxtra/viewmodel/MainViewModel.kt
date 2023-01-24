@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.noreplypratap.maxtra.model.request.CreatePost
 import com.noreplypratap.maxtra.model.response.ListOfPosts
 import com.noreplypratap.maxtra.repository.Repository
-import com.noreplypratap.maxtra.views.ui.utils.TAG
+import com.noreplypratap.maxtra.utils.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody

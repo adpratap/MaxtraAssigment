@@ -108,8 +108,6 @@ class SecondFragment : Fragment() {
     }
 
     private fun setupThumbImages(): MultipartBody.Part? {
-        // code for Thumb Image ...
-
         return null
     }
 
