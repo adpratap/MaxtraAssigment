@@ -65,7 +65,7 @@ class DetailsFragment : Fragment() {
     }
 
     private fun setupImage() {
-        Glide.with(this).load(postsData?.images)
+        Glide.with(this).load(postsData?.images?.get(1))
             .into(binding.ivImage)
     }
 

@@ -33,25 +33,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:layout_margin="18dp"
                 android:layout_marginTop="35dp"
                 android:layout_marginBottom="35dp"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Enter Details ..."
                     android:layout_marginBottom="20dp"
+                    android:text="Enter Details ..."
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:hintAnimationEnabled="true"
                     android:layout_marginBottom="8dp"
+                    app:hintAnimationEnabled="true"
                     app:hintEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -66,28 +66,28 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:hintAnimationEnabled="true"
                     android:layout_marginBottom="8dp"
+                    app:hintAnimationEnabled="true"
                     app:hintEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDescription"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
+                        android:layout_marginBottom="20dp"
                         android:gravity="top"
                         android:hint="Description"
-                        android:layout_marginBottom="20dp"
                         android:inputType="textMultiLine" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
 
                 <Button
-                android:id="@+id/btnSelectVideo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Pick Video" />
+                    android:id="@+id/btnSelectVideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Pick Video" />
 
                 <Button
                     android:id="@+id/btnSelectImages"
@@ -95,6 +95,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="Select Images" />
+
+                <ImageView
+                    android:id="@+id/ivSelectImages"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="centerCrop"
+                    android:layout_marginTop="20dp" />
 
 
             </LinearLayout>
@@ -109,8 +116,6 @@
             android:text="Post" />
 
     </LinearLayout>
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

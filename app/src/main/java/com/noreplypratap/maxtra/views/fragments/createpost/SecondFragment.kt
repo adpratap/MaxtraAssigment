@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.noreplypratap.maxtra.R
 import com.noreplypratap.maxtra.databinding.FragmentSecondBinding
 import com.noreplypratap.maxtra.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,9 +32,13 @@ class SecondFragment : Fragment() {
 
     private lateinit var selectedImages: Uri
 
+    private var selectedImageUri: Uri? = null
+
     private var sVideoUri: Uri? = null
 
     private val FILE_MANAGER_REQUEST_CODE = 1
+
+    private val REQUEST_CODE_IMAGE = 1
 
 
     override fun onCreateView(
@@ -51,18 +56,38 @@ class SecondFragment : Fragment() {
 
             val name = binding.etName.text.toString()
             val desc = binding.etDescription.text.toString()
-            val video: MultipartBody.Part? = setupVideo()
-            val images: MultipartBody.Part? = setupImages()
-            val videoThumbImages: MultipartBody.Part? = setupThumbImages()
+//            val video: MultipartBody.Part? = setupVideo()
+//            val images: MultipartBody.Part? = setupImages()
+//            val videoThumbImages: MultipartBody.Part? = setupThumbImages()
 
-            val status : Boolean = validation(video,images,videoThumbImages)
+            val images = listOf(
+                R.drawable.image1.toString(),
+                R.drawable.image2.toString(),
+            )
 
-            if (status){
-                val multipartBody = createPost(name, 92, 1, desc, images, video, videoThumbImages)
-                sendPost(multipartBody)
+            val imagesPart = images.map {
+                val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+                MultipartBody.Part.createFormData("images[]", "images.jpg", requestBody)
+            }
+
+            val videoPart = RequestBody.create("video/*".toMediaTypeOrNull(), R.raw.abc.toString())
+            val videoBody = MultipartBody.Part.createFormData("videos", "videos.mp4", videoPart)
+
+            val videoThumbnailPart = RequestBody.create("image/*".toMediaTypeOrNull(), R.drawable.image3.toString())
+            val videoThumbnailBody = MultipartBody.Part.createFormData("video_thumbnail", "videoThumbnail.jpg", videoThumbnailPart)
+
+
+            if (name.isNullOrBlank() && desc.isNullOrBlank()) {
+                Toast.makeText(
+                    requireContext(),
+                    "Empty ...",
+                    Toast.LENGTH_SHORT
+                ).show()
             }else{
-                val multipartBody = createPost(name, 92, 1, desc, null, null, null)
+                val multipartBody =
+                    createPost(name, 92, 1, name, imagesPart, videoBody, videoThumbnailBody)
                 sendPost(multipartBody)
+
             }
 
         }
@@ -73,9 +98,12 @@ class SecondFragment : Fragment() {
         }
 
         binding.btnSelectImages.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-            startActivityForResult(intent, FILE_MANAGER_REQUEST_CODE)
+            Intent(Intent.ACTION_PICK).also {
+                it.type = "image/*"
+                val mimeTypes = arrayOf("image/jpeg", "image/png")
+                it.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+                startActivityForResult(it, REQUEST_CODE_IMAGE)
+            }
         }
 
         mainViewModel.createPostsResponse.observe(viewLifecycleOwner) {
@@ -94,21 +122,6 @@ class SecondFragment : Fragment() {
             }
         }
 
-    }
-
-    private fun validation(
-        video: MultipartBody.Part?,
-        images: MultipartBody.Part?,
-        videoThumbImages: MultipartBody.Part?
-    ): Boolean {
-        if (video != null && images != null && videoThumbImages != null){
-            return true
-        }
-        return false
-    }
-
-    private fun setupThumbImages(): MultipartBody.Part? {
-        return null
     }
 
     private fun setupImages(): MultipartBody.Part? {
@@ -154,7 +167,7 @@ class SecondFragment : Fragment() {
         return null
     }
 
-    fun getRealPathFromUri(uri: Uri): String? {
+    private fun getRealPathFromUri(uri: Uri): String? {
         var cursor: Cursor? = null
         try {
             val proj = arrayOf(MediaStore.Images.Media.DATA)
@@ -175,17 +188,12 @@ class SecondFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == FILE_MANAGER_REQUEST_CODE && resultCode == RESULT_OK) {
-            val selectedVideoUri = data?.data
-            sVideoUri = selectedVideoUri
-            Toast.makeText(requireContext(), "Video Selected..", Toast.LENGTH_SHORT).show()
-        }
-
-        if (requestCode == FILE_MANAGER_REQUEST_CODE && resultCode == RESULT_OK) {
-            if (data?.data != null) {
-                selectedImages = data.data!!
-                Toast.makeText(requireContext(), "Image Selected..", Toast.LENGTH_SHORT).show()
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                REQUEST_CODE_IMAGE -> {
+                    selectedImageUri = data?.data
+                    binding.ivSelectImages.setImageURI(selectedImageUri)
+                }
             }
         }
     }
@@ -195,7 +203,7 @@ class SecondFragment : Fragment() {
         userId: Int = 92,
         postType: Int = 1,
         description: String,
-        images: MultipartBody.Part?,
+        images: List<MultipartBody.Part>?,
         video: MultipartBody.Part?,
         videoThumbnail: MultipartBody.Part?
     ): MultipartBody {
@@ -216,7 +224,7 @@ class SecondFragment : Fragment() {
                 }
             }
             .apply {
-                images?.let {
+                images?.forEach {
                     addPart(it)
                 }
             }.build()
@@ -226,4 +234,8 @@ class SecondFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }
+
+
