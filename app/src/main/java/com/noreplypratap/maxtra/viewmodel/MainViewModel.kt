@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import retrofit2.await
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,6 +40,25 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     fun multiPartPostData(body: MultipartBody) = viewModelScope.launch {
         try {
             val response = repository.multiPartPostData(body).await()
+
+            Log.d(TAG,"Data .. $response")
+
+            if (response.message == "Success") {
+                _createPostsResponse.postValue(response)
+                Log.d(TAG,"Done Post Created............ ${response.message} ")
+            } else {
+                Log.d(TAG,"Error Post Created............ ${response.message} ")
+            }
+        } catch (e: Exception) {
+            Log.d(TAG,"Exception Error creating post $e")
+        }
+    }
+
+    fun postData(name: String, userId: Int, postType: Int, description: String, images: List<File>?,videos : File?,videoThumb : File?) = viewModelScope.launch {
+        try {
+            val response = repository.createPostRepo(name,userId,postType,description,images,videos,videoThumb).await()
+
+            Log.d(TAG,"Data .. $response")
 
             if (response.message == "Success") {
                 _createPostsResponse.postValue(response)

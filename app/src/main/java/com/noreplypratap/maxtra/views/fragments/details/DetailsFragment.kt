@@ -65,7 +65,7 @@ class DetailsFragment : Fragment() {
     }
 
     private fun setupImage() {
-        Glide.with(this).load(postsData?.images?.get(1))
+        Glide.with(this).load(postsData?.imagesAll?.get(1))
             .into(binding.ivImage)
     }
 
@@ -73,6 +73,7 @@ class DetailsFragment : Fragment() {
         val player = binding.videoView
         val url = postsData?.videos
         player.setVideoURI(Uri.parse(url))
+
         player.start()
     }
 

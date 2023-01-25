@@ -25,10 +25,10 @@ interface PostServices {
         @Part("name") name: RequestBody,
         @Part("user_id") userId: RequestBody,
         @Part("post_type") postType: RequestBody,
-        @Part("discription") description: RequestBody?,
+        @Part("discription") description: RequestBody,
         @Part images: List<MultipartBody.Part>?,
-        @Part videos: List<MultipartBody.Part>?,
-        @Part videoThumbnails: List<MultipartBody.Part>?
+        @Part videos: MultipartBody.Part?,
+        @Part videoThumbnails: MultipartBody.Part?
     ): Call<CreatePost>
 
 }
