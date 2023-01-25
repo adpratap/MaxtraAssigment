@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.noreplypratap.maxtra.R
 import com.noreplypratap.maxtra.databinding.FragmentSecondBinding
+import com.noreplypratap.maxtra.utils.isOnline
 import com.noreplypratap.maxtra.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MultipartBody
@@ -49,8 +50,16 @@ class SecondFragment : Fragment() {
         setupUI()
 
         binding.btnPost.setOnClickListener {
-            binding.progressBar2.visibility = View.VISIBLE
-            postData()
+            if (requireContext().isOnline()){
+                binding.progressBar2.visibility = View.VISIBLE
+                postData()
+            }else{
+                Toast.makeText(
+                    requireContext(),
+                    "No Internet!!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         binding.btnSelectVideo.setOnClickListener {
@@ -158,14 +167,10 @@ class SecondFragment : Fragment() {
                 }
             }.build()
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }
 
 

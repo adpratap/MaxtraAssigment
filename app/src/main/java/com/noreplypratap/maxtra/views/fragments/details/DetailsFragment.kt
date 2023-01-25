@@ -1,5 +1,6 @@
 package com.noreplypratap.maxtra.views.fragments.details
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import com.google.gson.Gson
 import com.noreplypratap.maxtra.databinding.FragmentDetailsBinding
 import com.noreplypratap.maxtra.model.response.Data
 import com.noreplypratap.maxtra.utils.TAG
+import com.noreplypratap.maxtra.utils.isOnline
 
 class DetailsFragment : Fragment() {
 
@@ -31,7 +33,16 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getData()
+        if (requireContext().isOnline()){
+            getData()
+        }else{
+            Toast.makeText(
+                requireContext(),
+                "No Internet!!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
     }
 
     private fun getData() {
@@ -44,17 +55,23 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setView() {
         //Set Views
         Toast.makeText(requireContext(), postsData!!.name, Toast.LENGTH_SHORT).show()
-        binding.name.text = postsData!!.name
-        binding.desc.text = postsData!!.discription
-        binding.postType.text = postsData!!.post_type
-        binding.userid.text = postsData!!.user_id.toString()
-        binding.likes.text = postsData!!.like_count.toString()
+        binding.name.text = "Name : ${postsData!!.name}"
+        binding.desc.text = "Desc : ${ postsData!!.discription }"
+        binding.postType.text ="Post Type : ${ postsData!!.post_type }"
+        binding.userid.text = "User ID : ${ postsData!!.user_id.toString() }"
+        binding.likes.text = "Likes : ${ postsData!!.like_count.toString() }"
         // add More Data
 
         if (postsData?.videos != null){
+            Toast.makeText(
+                requireContext(),
+                "Video Loading ... ",
+                Toast.LENGTH_SHORT
+            ).show()
             videoPlayer()
         }
 
@@ -66,7 +83,9 @@ class DetailsFragment : Fragment() {
 
     private fun setupImage() {
         Glide.with(this).load(postsData?.imagesAll?.get(1))
-            .into(binding.ivImage)
+            .into(binding.ivImage1)
+        Glide.with(this).load(postsData?.imagesAll?.get(2))
+            .into(binding.ivImage2)
     }
 
     private fun videoPlayer() {
@@ -75,6 +94,11 @@ class DetailsFragment : Fragment() {
         player.setVideoURI(Uri.parse(url))
 
         player.start()
+        Toast.makeText(
+            requireContext(),
+            "Video playing ... ",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onDestroyView() {
