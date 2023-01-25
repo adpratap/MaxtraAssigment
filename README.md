@@ -1,5 +1,6 @@
 # MaxtraAssigment
 Using MVVM , Dagger Hilt , Navigation , viewBinding , Retrofit etc
-![Screenshot_20230124-190252_Maxtra Assigment](https://user-images.githubusercontent.com/40080908/214312929-7a54063e-cd7a-43d1-94a1-5793100ccc50.png)
-![Screenshot_20230124-190353_Maxtra Assigment](https://user-images.githubusercontent.com/40080908/214312997-0f794e3e-07a9-413b-a3bf-75c4da68a424.png)
-![Screenshot_20230124-190343_Maxtra Assigment](https://user-images.githubusercontent.com/40080908/214313017-3a4e1505-a8ac-481e-a1bc-cc9fb4280188.png)
+
+![Screenshot_20230125-160741_Maxtra Assigment](https://user-images.githubusercontent.com/40080908/214543876-16a4a860-b961-47e1-b9b5-2992006289a4.png)
+![Screenshot_20230125-160733_Maxtra Assigment](https://user-images.githubusercontent.com/40080908/214543894-6641a1a6-e186-46c6-8127-cd01783b23df.png)
+![Screenshot_20230125-160748_Maxtra Assigment](https://user-images.githubusercontent.com/40080908/214543912-6e1368b9-5523-4999-b970-a5e34e8d61dc.png)
