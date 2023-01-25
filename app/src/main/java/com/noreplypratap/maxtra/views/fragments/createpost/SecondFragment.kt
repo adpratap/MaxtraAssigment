@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +14,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.noreplypratap.maxtra.R
 import com.noreplypratap.maxtra.databinding.FragmentSecondBinding
+import com.noreplypratap.maxtra.utils.TAG
 import com.noreplypratap.maxtra.utils.isOnline
 import com.noreplypratap.maxtra.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.MultipartBody
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,6 +36,7 @@ class SecondFragment : Fragment() {
 
     private var selectedVideosThumb: File? = null
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,24 +45,14 @@ class SecondFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupVideos()
-        setupImagesAndThumb()
         setupUI()
 
         binding.btnPost.setOnClickListener {
-            if (requireContext().isOnline()){
-                binding.progressBar2.visibility = View.VISIBLE
-                postData()
-            }else{
-                Toast.makeText(
-                    requireContext(),
-                    "No Internet!!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            createPost()
         }
 
         binding.btnSelectVideo.setOnClickListener {
@@ -71,56 +64,122 @@ class SecondFragment : Fragment() {
         }
     }
 
-    private fun setupUI() {
-        mainViewModel.createPostsResponse.observe(viewLifecycleOwner) {
-            if (it.message == "Success") {
-                binding.progressBar2.visibility = View.GONE
-                Toast.makeText(
-                    requireContext(),
-                    "Data Posted",
-                    Toast.LENGTH_SHORT
-                ).show()
-                findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
-            }else{
-                binding.progressBar2.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun postData() {
+    private fun createPost() {
         val name = binding.etName.text.toString()
         val desc = binding.etDescription.text.toString()
+
+        val pattern = "[a-zA-Z ]*"
+        val matcher = Regex(pattern).matches(name)
+        if (!matcher) {
+            Toast.makeText(
+                requireContext(),
+                "Enter Valid Name .. ",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
         if (name.isBlank() && desc.isBlank()) {
             Toast.makeText(
                 requireContext(),
                 "Please Enter Data ... ",
                 Toast.LENGTH_SHORT
             ).show()
-        } else {
-            mainViewModel.postData(
-                name,
-                92,
-                1,
-                desc,
-                selectedImageFile,
-                selectedVideos,
-                selectedVideosThumb
-            )
+            return
+        }else{
+            if (requireContext().isOnline()) {
+                moreData()
+                showProgressBar()
+                postData(name,desc)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "No Internet!!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
+    private fun moreData() {
+        Toast.makeText(
+            requireContext(),
+            "Wait Processing ... ",
+            Toast.LENGTH_SHORT
+        ).show()
+        runBlocking {
+            launch(Dispatchers.IO) {
+                setupImages()
+                setupVideos()
+            }
+        }
+        Toast.makeText(
+            requireContext(),
+            "Selected",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun showProgressBar() {
+        binding.progressBar2.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar2.visibility = View.GONE
+    }
+
+    private fun setupUI() {
+        mainViewModel.createPostsResponse.observe(viewLifecycleOwner) {
+            Log.d(TAG, it.toString())
+            if (it) {
+                hideProgressBar()
+                Toast.makeText(
+                    requireContext(),
+                    "Data Posted",
+                    Toast.LENGTH_SHORT
+                ).show()
+                findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Error .. ",
+                    Toast.LENGTH_SHORT
+                ).show()
+                hideProgressBar()
+            }
+        }
+    }
+
+    private fun postData(name : String , desc : String) {
+        mainViewModel.postData(
+            name,
+            92,
+            1,
+            desc,
+            selectedImageFile,
+            selectedVideos,
+            selectedVideosThumb
+        )
+    }
+
+    private fun setupImages() {
+        selectedImageFile.apply {
+            add(imageToFile(R.drawable.image1))
+            add(imageToFile(R.drawable.image2))
+        }
+        selectedVideosThumb = imageToFile(R.drawable.image2)
+    }
+
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun setupImagesAndThumb() {
-        val drawable = resources.getDrawable(R.drawable.image1)
+    private fun imageToFile(image: Int): File {
+        val drawable = resources.getDrawable(image)
         val bitmap = (drawable as BitmapDrawable).bitmap
         val file = File(requireContext().cacheDir, "images.jpg")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         outputStream.close()
-        selectedImageFile.add(file)
-        selectedImageFile.add(file)
-        selectedImageFile.add(file)
-        selectedVideosThumb = file
+
+        return file
     }
 
     private fun setupVideos() {
@@ -132,41 +191,11 @@ class SecondFragment : Fragment() {
                 input.copyTo(output)
             }
         }
+
         selectedVideos = videoFile
+        binding.progressBar2.visibility = View.GONE
     }
 
-    private fun createPost(
-        name: String,
-        userId: Int = 92,
-        postType: Int = 1,
-        description: String,
-        images: MultipartBody.Part?,
-        video: MultipartBody.Part?,
-        videoThumbnail: MultipartBody.Part?
-    ): MultipartBody {
-        return MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("name", name)
-            .addFormDataPart("user_id", userId.toString())
-            .addFormDataPart("post_type", postType.toString())
-            .addFormDataPart("discription", description)
-            .addFormDataPart("images[]", images.toString())
-            .apply {
-                video?.let {
-                    addPart(video)
-                }
-            }
-            .apply {
-                videoThumbnail?.let {
-                    addPart(videoThumbnail)
-                }
-            }
-            .apply {
-                images?.let {
-                    addPart(it)
-                }
-            }.build()
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -82,9 +82,9 @@ class DetailsFragment : Fragment() {
     }
 
     private fun setupImage() {
-        Glide.with(this).load(postsData?.imagesAll?.get(1))
+        Glide.with(requireContext()).load(postsData?.imagesAll?.get(1))
             .into(binding.ivImage1)
-        Glide.with(this).load(postsData?.imagesAll?.get(2))
+        Glide.with(requireContext()).load(postsData?.profile_image)
             .into(binding.ivImage2)
     }
 

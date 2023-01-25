@@ -15,10 +15,6 @@ interface PostServices {
         @Query("user_id") userId : Int
     ) : Response<ListOfPosts>
 
-    @POST("create_post")
-    suspend fun multiPartPostData(@Body body: MultipartBody): Call<CreatePost>
-
-
     @Multipart
     @POST("create_post")
     fun createPost(

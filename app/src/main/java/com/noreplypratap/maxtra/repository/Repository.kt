@@ -13,8 +13,6 @@ class Repository @Inject constructor(private val postServices: PostServices) {
 
     suspend fun getPosts(userId: Int) = postServices.getPosts(userId)
 
-    suspend fun multiPartPostData(body: MultipartBody) = postServices.multiPartPostData(body)
-
     fun createPostRepo(
         name: String,
         userId: Int,
