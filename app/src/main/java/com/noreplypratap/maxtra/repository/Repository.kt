@@ -2,7 +2,6 @@ package com.noreplypratap.maxtra.repository
 
 import com.noreplypratap.maxtra.api.PostServices
 import com.noreplypratap.maxtra.model.request.CreatePost
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -35,7 +34,7 @@ class Repository @Inject constructor(private val postServices: PostServices) {
         val thumbFile = File(videoThumb!!.path)
         val thumbRequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), thumbFile)
         val thumbPart =
-            MultipartBody.Part.createFormData("images[]", thumbFile.name, thumbRequestBody)
+            MultipartBody.Part.createFormData("video_thumbnail", thumbFile.name, thumbRequestBody)
 
         val vFile = File(videos!!.path)
         val vRequestBody = RequestBody.create("videos/*".toMediaTypeOrNull(), vFile)
